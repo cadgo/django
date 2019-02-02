@@ -1,0 +1,54 @@
+{% extends 'multiformtest/base.html' %}
+{% block content %}
+Hola Mundo
+<form action="{% url 'form1'%}" method="post" id="idPost">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset.forms %}
+    <div class="row form-row spacer" id="EntryForms{{forloop.counter0}}">
+        <div class="col-4">
+            <div class="input-group">
+                <tr>
+                    {{ form }}
+                </tr>
+            </div>
+        </div>
+    </div>
+     {% endfor %}
+    <input id="submitform" type="submit" value="SubmitForm">
+</form>
+<div id="buttons">
+    <button id="addbuton" onclick="cloneElement()">AddButton</button>
+</div>
+{% endblock %}
+{% block scripts %}
+    function ChangeIndex(NewIndexNumber, Atribute){}
+
+    function modifyData(Element, BaseElementNumber, formselector="form"){
+        var ReplaceRegex = /^([A-za-z-_]*)(\d?)([A-Za-z-]*)$/g
+        var idElement = $(Element).attr("id")
+        var newIdElement = idElement.slice(0,idElement.length-1) + BaseElementNumber;
+        $(Element).attr("id", newIdElement)
+        console.log(formselector);
+        console.log(BaseElementNumber);
+        var element1= $(Element).find("label").attr("for")
+        $(Element).find("label")
+            .attr("for", element1.replace(ReplaceRegex, "$1"+BaseElementNumber+"$3"))
+        $(Element).find("input")
+            .attr
+        console.log(element1);
+        //    $("#EntryForms0").find("input").get(0).name
+    }
+
+    function cloneElement(){
+        var inputElements = document.getElementsByClassName("form-row");
+        var formElement = document.getElementById("idPost");
+        var LastElement = inputElements[inputElements.length-1];
+        var cln = LastElement.cloneNode(true);
+        modifyData(cln, inputElements.length)
+        //console.log(cln);
+        //formElement.appendChild(cln);
+        //inputElements.parentNode.insertBefore(cln, document.getElementById("submitform"));
+        $(cln).insertBefore("#submitform");
+    }
+{% endblock %}
