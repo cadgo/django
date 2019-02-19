@@ -19,36 +19,87 @@ Hola Mundo
 </form>
 <div id="buttons">
     <button id="addbuton" onclick="cloneElement()">AddButton</button>
+    <button id="delelement" onclick="deleteElement()">Del Button</button>
 </div>
 {% endblock %}
 {% block scripts %}
-    function ChangeIndex(NewIndexNumber, Atribute){}
 
-    function modifyData(Element, BaseElementNumber, formselector="form"){
+    function GetMultiFormData(ElementAttr){
+        $.each(ElementAttr, function (key, value){
+            ElementAttr[key] = $('#'+key).attr("value")
+        });
+    return ElementAttr
+    }
+
+    function UpdateFormData(CurrentIndexElement){
+        $("#id_form-TOTAL_FORMS").attr("value", CurrentIndexElement)
+    }
+
+    function modifyData(Element, BaseElementNumber){
         var ReplaceRegex = /^([A-za-z-_]*)(\d?)([A-Za-z-]*)$/g
         var idElement = $(Element).attr("id")
         var newIdElement = idElement.slice(0,idElement.length-1) + BaseElementNumber;
         $(Element).attr("id", newIdElement)
-        console.log(formselector);
-        console.log(BaseElementNumber);
         var element1= $(Element).find("label").attr("for")
         $(Element).find("label")
             .attr("for", element1.replace(ReplaceRegex, "$1"+BaseElementNumber+"$3"))
         $(Element).find("input")
-            .attr
+            .attr("id", element1.replace(ReplaceRegex, "$1"+BaseElementNumber+"$3"))
+        $(Element).find("input")
+            .attr("name", element1.replace(ReplaceRegex, "$1"+BaseElementNumber+"$3"))
         console.log(element1);
         //    $("#EntryForms0").find("input").get(0).name
     }
 
+    function CompareMaxElements(MaxElementSupported, CurrentIndexElement){
+        //return true if we have no arrive to the max element
+        if(Number(MaxElementSupported) == Number(CurrentIndexElement)){
+            return false;
+        }
+        console.log("true")
+        return true;
+    }
+
+    function CompareMinElement(MinElementSupported, CurrentIndexElement){
+        console.log(MinElementSupported);
+        console.log(CurrentIndexElement);
+        if(Number(MinElementSupported) == Number(CurrentIndexElement)){
+            return false;
+        }
+        return true;
+    }
+
     function cloneElement(){
+        ElementsMultiform  = {"id_form-TOTAL_FORMS": "","id_form-MIN_NUM_FORMS": "" , "id_form-MAX_NUM_FORMS": ""}
         var inputElements = document.getElementsByClassName("form-row");
         var formElement = document.getElementById("idPost");
         var LastElement = inputElements[inputElements.length-1];
+        ElementsMultiform = GetMultiFormData(ElementsMultiform);
+        if (CompareMaxElements(ElementsMultiform['id_form-MAX_NUM_FORMS'], inputElements.length) == false){
+            console.log("Max Number of element for this form")
+            return
+        }
+        UpdateFormData(inputElements.length+1);
         var cln = LastElement.cloneNode(true);
         modifyData(cln, inputElements.length)
         //console.log(cln);
         //formElement.appendChild(cln);
         //inputElements.parentNode.insertBefore(cln, document.getElementById("submitform"));
         $(cln).insertBefore("#submitform");
+    }
+
+    function deleteElement(){
+        ElementsMultiform  = {"id_form-TOTAL_FORMS": "","id_form-MIN_NUM_FORMS": "" , "id_form-MAX_NUM_FORMS": ""}
+        var inputElements = document.getElementsByClassName("form-row");
+        var formElement = document.getElementById("idPost");
+        var LastElement = inputElements[inputElements.length-1];
+        console.log(LastElement);
+        ElementsMultiform = GetMultiFormData(ElementsMultiform);
+        if(CompareMinElement(ElementsMultiform['id_form-MIN_NUM_FORMS'], inputElements.length)== false){
+            console.log("Not Possible to remove elements");
+            return
+        }
+        UpdateFormData(inputElements.length-1);
+        $('#'+LastElement.id).remove();
     }
 {% endblock %}
