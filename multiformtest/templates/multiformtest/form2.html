@@ -1,0 +1,72 @@
+{% extends 'multiformtest/base.html' %}
+{% block content %}
+<br class="container">
+    <h1>Automation Demo For R80 API</h1>
+    <p class="lead">
+        R80 API demo to deploy Rule bases:
+        <br />
+        <br />
+        <h2>Check Point:</h2>
+        <ul>
+            <li>Security Rules</li>
+            <li>TCP Objects</li>
+            <li>UDP Objects</li>
+        </ul>
+    </p>
+    <div class="container">
+       <div class="row">
+           <div class="col d-flex justify-content-center">
+               <button type="button" class="btn btn-success" onclick="CreateHostFrame()">Create Host</button>
+           </div>
+           <div class="col d-flex justify-content-center">
+               <button type="button" class="btn btn-success" onclick="CreateNetFrame()">Create Network</button>
+           </div>
+       </div>
+    </div>
+    </br>
+    <div class="card text-center">
+        <div class="card-header bg-info">
+            <h5>FIREWALL RULES</h5>
+        </div>
+        {% if noobjects %}
+        Please create some host objects or networks objects to be able to create rules
+        {% else %}
+        <div class="card-body">
+            <form action="{% url 'form2'%}" method="post">
+                {% csrf_token %}
+                {{ rulesform.management_form }}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <label for="rules_id">Layer Append</label><br />
+                    </li>
+                    <li class="list-group-item">
+                        {% for form in rulesform.forms %}
+                        {{ form }}
+<!--                        <div class="row">
+                        <label for="{{ rulesform.RuleName.id_for_label }}"></label>
+                        <div class="col-2">
+                            {{ rulesform.RuleName }}
+                        </div>
+                        <label for="{{ rulesform.FWRuleOrigin.id_for_label }}">Dst Origin</label>
+                        {{ rulesform.FWRuleOrigin }}
+                        <label for="{{ rulesform.FwRuleDst.id_for_label }}">Dst Dir</label>
+                        {{ rulesform.FwRuleDst }}
+                        {{ rulesform.FWRulePort }}
+                        {{ rulesform.ActionRule }}
+                        {{ rulesform.LogRule }}-->
+                        {% endfor %}
+                        </div>
+                    </li>
+                </ul>
+                <input type="submit" class="btn btn-primary" value="SubmitRules">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!--<form action="/r80api/extends/rulesdemo/" method="post">
+    {% csrf_token %}
+    {{ rulesform.as_table }}
+    <input type="submit" value="Submit_SMS">
+</form>-->
+{% endblock %}
